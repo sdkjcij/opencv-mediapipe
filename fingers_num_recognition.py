@@ -7,10 +7,11 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
-x1 = 0
 x2 = 0
-y1 = 0
 y2 = 0
+x_wrist2 = 0
+y_wrist2 = 0
+length2 = 0
 
 
 # 根據兩點的座標，計算角度
@@ -19,6 +20,7 @@ def vector_2d_angle(v1, v2):
     v1_y = v1[1]
     v2_x = v2[0]
     v2_y = v2[1]
+
     try:
         angle_ = math.degrees(math.acos(
             (v1_x * v2_x + v1_y * v2_y) / (((v1_x ** 2 + v1_y ** 2) ** 0.5) * ((v2_x ** 2 + v2_y ** 2) ** 0.5))))
@@ -30,14 +32,20 @@ def vector_2d_angle(v1, v2):
 # 根據傳入的 21 個節點座標，得到該手指的角度
 def hand_angle(hand_):
     angle_list = []
+
     # thumb 大拇指角度
     angle_ = vector_2d_angle(
         ((int(hand_[0][0]) - int(hand_[2][0])), (int(hand_[0][1]) - int(hand_[2][1]))),
         ((int(hand_[3][0]) - int(hand_[4][0])), (int(hand_[3][1]) - int(hand_[4][1])))
         )
-    # 輸出大拇指座標
-    # print((int(hand_[0][0])))
-    # print((int(hand_[0][1])))
+
+    # 判斷手心手背
+    # print((int(hand_[0][0]) - int(hand_[2][0])), (int(hand_[0][1]) - int(hand_[2][1])))
+    if (round((int(hand_[0][0]) - int(hand_[2][0])), 0)) < 0:
+        print("現在辨識為手背")
+    else:
+        print("現在辨識為手心")
+
     angle_list.append(angle_)
 
     # index 食指角度
@@ -46,25 +54,32 @@ def hand_angle(hand_):
         ((int(hand_[7][0]) - int(hand_[8][0])), (int(hand_[7][1]) - int(hand_[8][1])))
     )
     angle_list.append(angle_)
+
     # middle 中指角度
     angle_ = vector_2d_angle(
         ((int(hand_[0][0]) - int(hand_[10][0])), (int(hand_[0][1]) - int(hand_[10][1]))),
         ((int(hand_[11][0]) - int(hand_[12][0])), (int(hand_[11][1]) - int(hand_[12][1])))
     )
     angle_list.append(angle_)
+
     # ring 無名指角度
     angle_ = vector_2d_angle(
         ((int(hand_[0][0]) - int(hand_[14][0])), (int(hand_[0][1]) - int(hand_[14][1]))),
         ((int(hand_[15][0]) - int(hand_[16][0])), (int(hand_[15][1]) - int(hand_[16][1])))
     )
     angle_list.append(angle_)
+
     # pink 小拇指角度
     angle_ = vector_2d_angle(
         ((int(hand_[0][0]) - int(hand_[18][0])), (int(hand_[0][1]) - int(hand_[18][1]))),
         ((int(hand_[19][0]) - int(hand_[20][0])), (int(hand_[19][1]) - int(hand_[20][1])))
     )
     angle_list.append(angle_)
-    # print(angle_list)
+
+    for num in range(0, 5):
+        angle_list[num] = round(angle_list[num], 2)
+
+    print("手指間角度: " + str(angle_list))
     return angle_list
 
 
@@ -76,38 +91,38 @@ def hand_pos(fingers_angle):
     f4 = fingers_angle[3]  # 無名指角度
     f5 = fingers_angle[4]  # 小拇指角度
     # print(finger_angle)
-    # 小於 45 表示手指伸直，大於等於 45 表示手指捲縮
-    if f1 < 45 and f2 >= 45 and f3 >= 45 and f4 >= 45 and f5 >= 45:
+    # 小於 90 表示手指伸直，大於等於 90 表示手指捲縮
+    if f1 < 90 and f2 >= 90 and f3 >= 90 and f4 >= 90 and f5 >= 90:
         return 'good'
-    elif f1 >= 45 and f2 >= 45 and f3 < 45 and f4 >= 45 and f5 >= 45:
-        return 'no!!!'
-    elif f1 < 45 and f2 < 45 and f3 >= 45 and f4 >= 45 and f5 < 45:
+    elif f1 >= 90 and f2 >= 90 and f3 < 90 and f4 >= 90 and f5 >= 90:
+        return 'fuck!!!'
+    elif f1 < 90 and f2 < 90 and f3 >= 90 and f4 >= 90 and f5 < 90:
         return 'ROCK!'
-    elif f1 >= 45 and f2 >= 45 and f3 >= 45 and f4 >= 45 and f5 >= 45:
+    elif f1 >= 90 and f2 >= 90 and f3 >= 90 and f4 >= 90 and f5 >= 90:
         return '0'
-    elif f1 >= 45 and f2 >= 45 and f3 >= 45 and f4 >= 45 and f5 < 45:
+    elif f1 >= 90 and f2 >= 90 and f3 >= 90 and f4 >= 90 and f5 < 90:
         return 'pink'
-    elif f1 >= 45 and f2 < 45 and f3 >= 45 and f4 >= 45 and f5 >= 45:
+    elif f1 >= 90 and f2 < 90 and f3 >= 90 and f4 >= 90 and f5 >= 90:
         return '1'
-    elif f1 >= 45 and f2 < 45 and f3 < 45 and f4 >= 45 and f5 >= 45:
+    elif f1 >= 90 and f2 < 90 and f3 < 90 and f4 >= 90 and f5 >= 90:
         return '2'
-    elif f1 >= 45 and f2 >= 45 and f3 < 45 and f4 < 45 and f5 < 45:
+    elif f1 >= 90 and f2 >= 90 and f3 < 90 and f4 < 90 and f5 < 90:
         return 'ok'
-    elif f1 < 45 and f2 >= 45 and f3 < 45 and f4 < 45 and f5 < 45:
+    elif f1 < 90 and f2 >= 90 and f3 < 90 and f4 < 90 and f5 < 90:
         return 'ok'
-    elif f1 >= 45 and f2 < 45 and f3 < 45 and f4 < 45 and f5 > 45:
+    elif f1 >= 90 and f2 < 90 and f3 < 90 and f4 < 90 and f5 > 90:
         return '3'
-    elif f1 >= 45 and f2 < 45 and f3 < 45 and f4 < 45 and f5 < 45:
+    elif f1 >= 90 and f2 < 90 and f3 < 90 and f4 < 90 and f5 < 90:
         return '4'
-    elif f1 < 45 and f2 < 45 and f3 < 45 and f4 < 45 and f5 < 45:
+    elif f1 < 90 and f2 < 90 and f3 < 90 and f4 < 90 and f5 < 90:
         return '5'
-    elif f1 < 45 and f2 >= 45 and f3 >= 45 and f4 >= 45 and f5 < 45:
+    elif f1 < 90 and f2 >= 90 and f3 >= 90 and f4 >= 90 and f5 < 90:
         return '6'
-    elif f1 < 45 and f2 < 45 and f3 >= 45 and f4 >= 45 and f5 >= 45:
+    elif f1 < 90 and f2 < 90 and f3 >= 90 and f4 >= 90 and f5 >= 90:
         return '7'
-    elif f1 < 45 and f2 < 45 and f3 < 45 and f4 >= 45 and f5 >= 45:
+    elif f1 < 90 and f2 < 90 and f3 < 90 and f4 >= 90 and f5 >= 90:
         return '8'
-    elif f1 < 45 and f2 < 45 and f3 < 45 and f4 < 45 and f5 >= 45:
+    elif f1 < 90 and f2 < 90 and f3 < 90 and f4 < 90 and f5 >= 90:
         return '9'
     else:
         return ''
@@ -121,9 +136,9 @@ cTime = 0  # 目前時間初始化
 
 # mediapipe 啟用偵測手掌
 with mp_hands.Hands(
-        model_complexity=0,
-        min_detection_confidence=0.7,
-        min_tracking_confidence=0.7) as hands:
+        model_complexity=1,
+        min_detection_confidence=0.8,
+        min_tracking_confidence=0.8) as hands:
 
     if not cap.isOpened():
         print("Cannot open camera")
@@ -134,6 +149,7 @@ with mp_hands.Hands(
     while True:
         ret, img = cap.read()
         img = cv2.resize(img, (w, h))  # 縮小尺寸，加快處理效率
+
         if not ret:
             print("Cannot receive frame")
             break
@@ -152,14 +168,35 @@ with mp_hands.Hands(
                     y = i.y * h
                     x1 = hand_landmarks.landmark[4].x * w  # 取得大拇指末端 x 座標
                     y1 = hand_landmarks.landmark[4].y * h  # 取得大拇指末端 y 座標
+                    x_wrist1 = hand_landmarks.landmark[0].x * w  # 取得手掌末端 x 座標
+                    y_wrist1 = hand_landmarks.landmark[0].y * h  # 取得手掌末端 y 座標
                     finger_points.append((x, y))
 
                 # 計算斜率並輸出
-                m = (y1-y2)/(x1-x2)*(-1)
-                print(m)
-                # print(x1, y1)
+                m = round(((y1-y2)/(x1-x2)*(-1)), 2)
+                print("斜率 : " + str(m))
+                x1_output = round(x1, 0)
+                y1_output = round(y1, 0)
+                print("大拇指末端座標: " + str(x1_output) + "," + str(y1_output))
+
+                # 計算手掌間距離並輸出
+                length1 = math.sqrt((abs(x_wrist1 - x_wrist2)*abs(x_wrist1 - x_wrist2)) + (abs(y_wrist1 - y_wrist2)*abs(y_wrist1 - y_wrist2)))
+                length1_output = round(length1, 2)
+                print("手掌間距離: " + str(length1_output))
+
+                # 計算雙手手掌間距離和前一次數據差值並輸出
+                length_gap = round((length1 - length2), 2)
+                print("雙手手掌間距離和前一次數據差值: " + str(length_gap))
                 x2 = x1
                 y2 = y1
+                x_wrist2 = x_wrist1
+                y_wrist2 = y_wrist1
+                length2 = length1
+
+                if m > 0:
+                    cv2.putText(img, "Turn Left", (30, 120), fontFace, 2, (255, 255, 255), 10, lineType)
+                else:
+                    cv2.putText(img, "Turn Right", (30, 120), fontFace, 2, (255, 255, 255), 10, lineType)
 
                 if finger_points:
                     finger_angle = hand_angle(finger_points)  # 計算手指角度，回傳長度為 5 的串列
@@ -177,7 +214,7 @@ with mp_hands.Hands(
                     mp_drawing_styles.get_default_hand_landmarks_style(),
                     mp_drawing_styles.get_default_hand_connections_style())
 
-        # 將幀率顯示在影像上
+        # 將幀率顯示在影上像
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime
