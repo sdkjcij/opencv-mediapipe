@@ -177,7 +177,7 @@ with mp_hands.Hands(
                     mp_drawing_styles.get_default_hand_landmarks_style(),
                     mp_drawing_styles.get_default_hand_connections_style())
 
-        # 將幀率顯示在影上像
+        # 將幀率顯示在影像上
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime
