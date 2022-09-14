@@ -136,6 +136,7 @@ cTime = 0  # 目前時間初始化
 
 # mediapipe 啟用偵測手掌
 with mp_hands.Hands(
+        max_num_hands=2,
         model_complexity=1,
         min_detection_confidence=0.8,
         min_tracking_confidence=0.8) as hands:
@@ -170,6 +171,7 @@ with mp_hands.Hands(
                     y1 = hand_landmarks.landmark[4].y * h  # 取得大拇指末端 y 座標
                     x_wrist1 = hand_landmarks.landmark[0].x * w  # 取得手掌末端 x 座標
                     y_wrist1 = hand_landmarks.landmark[0].y * h  # 取得手掌末端 y 座標
+                    z_wrist1 = hand_landmarks.landmark[0].z
                     finger_points.append((x, y))
 
                 # 計算斜率並輸出
@@ -178,6 +180,7 @@ with mp_hands.Hands(
                 x1_output = round(x1, 0)
                 y1_output = round(y1, 0)
                 print("大拇指末端座標: " + str(x1_output) + "," + str(y1_output))
+                print("z軸相對座標" + str(z_wrist1))
 
                 # 計算手掌間距離並輸出
                 length1 = math.sqrt((abs(x_wrist1 - x_wrist2)*abs(x_wrist1 - x_wrist2)) + (abs(y_wrist1 - y_wrist2)*abs(y_wrist1 - y_wrist2)))
