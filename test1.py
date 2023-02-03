@@ -80,7 +80,7 @@ def hand_pos(fingers_angle):
     if f1 < 45 and f2 >= 45 and f3 >= 45 and f4 >= 45 and f5 >= 45:
         return 'good'
     elif f1 >= 45 and f2 >= 45 and f3 < 45 and f4 >= 45 and f5 >= 45:
-        return 'no!!!'
+        return 'fuck!!!'
     elif f1 < 45 and f2 < 45 and f3 >= 45 and f4 >= 45 and f5 < 45:
         return 'ROCK!'
     elif f1 >= 45 and f2 >= 45 and f3 >= 45 and f4 >= 45 and f5 >= 45:

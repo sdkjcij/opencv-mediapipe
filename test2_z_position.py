@@ -42,9 +42,9 @@ def hand_angle(hand_):
     # 判斷手心手背
     # print((int(hand_[0][0]) - int(hand_[2][0])), (int(hand_[0][1]) - int(hand_[2][1])))
     # if (round((int(hand_[0][0]) - int(hand_[2][0])), 0)) < 0:
-        # print("現在辨識為手背")
+    #     print("現在辨識為手背")
     # else:
-        # print("現在辨識為手心")
+    #     print("現在辨識為手心")
 
     angle_list.append(angle_)
 

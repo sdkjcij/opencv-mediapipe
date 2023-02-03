@@ -16,11 +16,13 @@ length2 = 0
 
 # 根據兩點的座標，計算角度
 def vector_2d_angle(v1, v2):
+    # 座標
     v1_x = v1[0]
     v1_y = v1[1]
     v2_x = v2[0]
     v2_y = v2[1]
 
+    # 向量內積求角度
     try:
         angle_ = math.degrees(math.acos(
             (v1_x * v2_x + v1_y * v2_y) / (((v1_x ** 2 + v1_y ** 2) ** 0.5) * ((v2_x ** 2 + v2_y ** 2) ** 0.5))))
@@ -76,6 +78,7 @@ def hand_angle(hand_):
     )
     angle_list.append(angle_)
 
+    # 輸出手指間角度列表
     for num in range(0, 5):
         angle_list[num] = round(angle_list[num], 2)
 
@@ -136,10 +139,10 @@ cTime = 0  # 目前時間初始化
 
 # mediapipe 啟用偵測手掌
 with mp_hands.Hands(
-        max_num_hands=2,
-        model_complexity=1,
-        min_detection_confidence=0.8,
-        min_tracking_confidence=0.8) as hands:
+        max_num_hands=2,  # 偵測手掌數量
+        model_complexity=1,  # 模型複雜度
+        min_detection_confidence=0.8,  # 最小偵測自信度
+        min_tracking_confidence=0.8) as hands:  # 最小追蹤自信度
 
     if not cap.isOpened():
         print("Cannot open camera")
@@ -155,6 +158,7 @@ with mp_hands.Hands(
             print("Cannot receive frame")
             break
 
+        # 影像翻轉
         img = cv2.flip(img, 1)
 
         img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # 轉換成 RGB 色彩
@@ -176,11 +180,11 @@ with mp_hands.Hands(
 
                 # 計算斜率並輸出
                 m = round(((y1-y2)/(x1-x2)*(-1)), 2)
-                print("斜率 : " + str(m))
+                print("斜率: " + str(m))
                 x1_output = round(x1, 0)
                 y1_output = round(y1, 0)
                 print("大拇指末端座標: " + str(x1_output) + "," + str(y1_output))
-                print("z軸相對座標" + str(z_wrist1))
+                print("z軸相對座標: " + str(z_wrist1))
 
                 # 計算手掌間距離並輸出
                 length1 = math.sqrt((abs(x_wrist1 - x_wrist2)*abs(x_wrist1 - x_wrist2)) + (abs(y_wrist1 - y_wrist2)*abs(y_wrist1 - y_wrist2)))
@@ -196,6 +200,7 @@ with mp_hands.Hands(
                 y_wrist2 = y_wrist1
                 length2 = length1
 
+                # 以斜率判斷轉彎方向
                 if m > 0:
                     cv2.putText(img, "Turn Left", (30, 120), fontFace, 2, (255, 255, 255), 10, lineType)
                 else:
@@ -217,7 +222,7 @@ with mp_hands.Hands(
                     mp_drawing_styles.get_default_hand_landmarks_style(),
                     mp_drawing_styles.get_default_hand_connections_style())
 
-        # 將幀率顯示在影上像
+        # 將幀率顯示在影像上
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime
